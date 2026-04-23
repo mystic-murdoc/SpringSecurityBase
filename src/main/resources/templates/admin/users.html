@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+<body>
+
+<h2>All Users</h2>
+
+<table>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.name}"></td>
+        <td th:text="${user.age}"></td>
+        <td th:text="${user.username}"></td>
+
+        <td>
+            <span th:each="role : ${user.roles}"
+                  th:text="${role.authority + ' '}"></span>
+        </td>
+
+        <td>
+            <a th:href="@{'/admin/users/' + ${user.id} + '/edit'}">Edit</a>
+
+            <form th:action="@{'/admin/users/' + ${user.id} + '/delete'}"
+                  method="post"
+                  style="display:inline;">
+
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}"/>
+
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<hr>
+
+<h3>Create user</h3>
+
+<form action="/admin/users" method="post">
+
+    <label>
+        <input type="text" name="name" placeholder="Name">
+    </label>
+    <label>
+        <input type="number" name="age" placeholder="Age">
+    </label>
+    <label>
+        <input type="text" name="username" placeholder="Username">
+    </label>
+    <label>
+        <input type="password" name="password" placeholder="Password">
+    </label>
+
+    <input type="hidden"
+           th:name="${_csrf.parameterName}"
+           th:value="${_csrf.token}"/>
+
+    <button type="submit">Create</button>
+</form>
+
+</body>
+</html>
