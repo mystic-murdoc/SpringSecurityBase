@@ -3,63 +3,76 @@ package ru.kata.spring.boot_security.demo.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.dao.UserDao;
+import ru.kata.spring.boot_security.demo.dao.UserRepository;
+import ru.kata.spring.boot_security.demo.entity.Role;
 import ru.kata.spring.boot_security.demo.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
 
-    private final UserDao userDao;
+    private final UserRepository userRepository;
+    private final RoleService roleService;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao) {
-        this.userDao = userDao;
+    public UserServiceImpl(UserRepository userRepository,
+                           RoleService roleService) {
+        this.userRepository = userRepository;
+        this.roleService = roleService;
     }
 
     @Override
     public List<User> getAllUsers() {
-        return userDao.getAllUsers();
+        return userRepository.findAll();
     }
 
     @Override
     public void saveUser(User user) {
-        userDao.saveUser(user);
+        userRepository.save(user);
     }
 
     @Override
-    public void updateUser(User user) {
-        User existingUser = userDao.findUserById(user.getId());
+    public void saveUser(User user, String roleName) {
+        Role role = roleService.findByName(roleName);
+        if (role == null) {
+            throw new IllegalArgumentException("Role not found: " + roleName);
+        }
+        user.setRoles(List.of(role));
+        userRepository.save(user);
+    }
+
+    @Override
+    public void updateUser(User user, String roleName) {
+        Role role = roleService.findByName(roleName);
+        User existingUser = userRepository.findById(user.getId()).orElseThrow();
 
         existingUser.setName(user.getName());
         existingUser.setAge(user.getAge());
         existingUser.setUsername(user.getUsername());
+        existingUser.setRoles(List.of(role));
 
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             existingUser.setPassword(user.getPassword());
         }
 
-        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
-            existingUser.setRoles(user.getRoles());
-        }
-
-        userDao.updateUser(existingUser);
+        userRepository.save(existingUser);
     }
 
     @Override
     public void deleteUser(Long id) {
-        userDao.deleteUser(id);
+        userRepository.deleteById(id);
     }
 
     @Override
-    public User findUserByUsername(String username) {
-        return userDao.findUserByUsername(username);
+    public Optional<User> findUserByUsername(String username) {
+        return userRepository.findUserByUsername(username);
     }
 
     @Override
     public User findUserById(Long id) {
-        return userDao.findUserById(id);
+        return userRepository.getById(id);
     }
 }

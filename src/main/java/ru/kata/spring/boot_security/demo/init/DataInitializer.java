@@ -37,7 +37,7 @@ public class DataInitializer implements CommandLineRunner {
             userRole = new Role("ROLE_USER");
             roleService.save(userRole);
         }
-        if (userService.findUserByUsername("admin") == null) {
+        if (userService.findUserByUsername("admin").isEmpty()) {
             User admin = new User();
             admin.setName("Admin");
             admin.setAge(30);
@@ -47,7 +47,7 @@ public class DataInitializer implements CommandLineRunner {
 
             userService.saveUser(admin);
         }
-        if (userService.findUserByUsername("user") == null) {
+        if (userService.findUserByUsername("user").isEmpty()) {
             User user = new User();
             user.setName("User");
             user.setAge(25);

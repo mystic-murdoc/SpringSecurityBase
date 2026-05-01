@@ -1,15 +1,11 @@
 package ru.kata.spring.boot_security.demo.entity;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,7 +22,7 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -58,41 +54,14 @@ public class User implements UserDetails {
         this.age = age;
     }
 
-    @Override
     public String getUsername() {
         return username;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
-    }
-
-    @Override
     public String getPassword() {
         return password;
     }

@@ -32,22 +32,24 @@ public class AdminController {
     }
 
     @PostMapping("/users")
-    public String createUser(@ModelAttribute User user) {
-        userService.saveUser(user);
-        return "redirect:/admin";
+    public String createUser(@ModelAttribute User user,
+                             @RequestParam String roleName) {
+        userService.saveUser(user, roleName);
+        return "redirect:/admin/users";
     }
 
     @PostMapping("/users/{id}/edit")
     public String updateUser(@PathVariable Long id,
-                           @ModelAttribute User user) {
+                           @ModelAttribute User user,
+                             @RequestParam String roleName) {
         user.setId(id);
-        userService.updateUser(user);
-        return "redirect:/admin";
+        userService.updateUser(user, roleName);
+        return "redirect:/admin/users";
     }
 
     @PostMapping("/users/{id}/delete")
     public String deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return "redirect:/admin";
+        return "redirect:/admin/users";
     }
 }
